@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="My Test Suite" verbose="2">
+    <test name="Regression1: AddMedicationNotification And Clinician TestCases">
+        <classes>
+            <class name="Tests.TC01_Test">
+                <methods>
+                    <include name="internetOffTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
