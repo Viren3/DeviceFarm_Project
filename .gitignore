@@ -63,4 +63,9 @@ app/
 
 .DS_Store
 
+#Report
+Reports/
+/Reports/
+
+
 
