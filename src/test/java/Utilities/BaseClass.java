@@ -9,6 +9,7 @@ import Pages.Fun_InternetOff;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -18,6 +19,7 @@ import org.testng.annotations.BeforeTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -31,57 +33,38 @@ public class BaseClass {
 
     public static Logger log = LogManager.getLogger(Fun_InternetOff.class.getName());
     public Properties properties;
-    public static WebDriver webDriver;
     public static AndroidDriver<AndroidElement> mobileDriver;
     public AppiumDriverLocalService appiumService;
     public AppiumServiceBuilder builder;
     @BeforeTest
-    public void mobileSetup() throws MalformedURLException {
+    public void mobileSetup() throws MalformedURLException, InterruptedException {
 
-        File f = new File("Application_build");
-        File fileName = new File(f, "yoCricket-v23.09.01.apk");
+        DesiredCapabilities caps = new DesiredCapabilities();
 
-        try {
-            if (appiumService == null) {
-                boolean flag = checkIfServerIsRunnning(4723);
-                if (!flag) {
-                    appiumService = AppiumDriverLocalService.buildDefaultService();
-                    appiumService.start();
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        log.info("Mobile service is started successfully.");
+        // Set your access credentials
+        caps.setCapability("browserstack.user", "virenchauhan_nxBqK3");
+        caps.setCapability("browserstack.key", "TD2Lrv8zpXUhMtHgHo5n");
 
-        String appiumServiceUrl = appiumService.getUrl().toString();
-        System.out.println("Appium Service Address : - " + appiumServiceUrl);
-        DesiredCapabilities cap = new DesiredCapabilities();
-        cap.setCapability(MobileCapabilityType.DEVICE_NAME, "Galaxy_Nexus_API");
-        cap.setCapability(MobileCapabilityType.APP, fileName.getAbsolutePath());
-        cap.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiautomator2");
-        cap.setCapability("platformName", "Android");
-        cap.setCapability("autoGrantPermissions", true);
-        cap.setCapability(MobileCapabilityType.UDID, "emulator-5554");
-        mobileDriver = new AndroidDriver<AndroidElement>(new URL(appiumServiceUrl), cap);
-        mobileDriver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-    }
+        // Set URL of the application under test
+        caps.setCapability("app", "bs://ce599abb84f497d5283f02a5fe99cf848cfe9ede");
 
-    public static boolean checkIfServerIsRunnning(int port) {
+        // Specify device and os_version for testing
+        caps.setCapability("device", "Google Pixel 3");
+        caps.setCapability("os_version", "9.0");
 
-        boolean isServerRunning = false;
-        ServerSocket serverSocket;
-        try {
-            serverSocket = new ServerSocket(port);
+        caps.setCapability("autoGrantPermissions", "true");
+        // Set other BrowserStack capabilities
+        caps.setCapability("project", "First Java Project");
+        caps.setCapability("build", "browserstack-build-1");
+        caps.setCapability("name", "first_test");
 
-            serverSocket.close();
-        } catch (IOException e) {
+        // Initialise the remote Webdriver using BrowserStack remote URL
+        // and desired capabilities defined above
+        mobileDriver = new AndroidDriver<AndroidElement>(
+                new URL("http://hub.browserstack.com/wd/hub"), caps);
+        mobileDriver.manage().timeouts().implicitlyWait(2, TimeUnit.MINUTES);
+        // Write your test case statements here
 
-            isServerRunning = true;
-        } finally {
-            serverSocket = null;
-        }
-        return isServerRunning;
     }
 
     public String getScreenshotPath(String TestCaseName) throws IOException, InterruptedException {
@@ -93,13 +76,9 @@ public class BaseClass {
     }
     @AfterClass
     public void teradown(){
+//        JavascriptExecutor jse = (JavascriptExecutor) mobileDriver;
+//        jse.executeScript("browserstack_executor: {\"action\": \"setSessionStatus\", \"arguments\": {\"status\": \"<passed/failed>\"}}");
         mobileDriver.quit();
     }
 
-    @AfterSuite(alwaysRun = true)
-    public void mobileTearDown() {
-        if (appiumService != null) {
-            appiumService.stop();
-        }
-    }
 }

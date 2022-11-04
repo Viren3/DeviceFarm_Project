@@ -20,14 +20,16 @@ public class Fun_InternetOff extends BaseClass {
     public void addNumber() throws InterruptedException {
         Elements el = new Elements(mobileDriver);
 
-        mobileDriver.findElement(el.clickonTextbox).click();
+//        mobileDriver.findElement(el.clickonTextbox).click();
+
+        mobileDriver.findElement(By.xpath("//android.widget.EditText[@index='1']")).click();
         Thread.sleep(3000);
-        mobileDriver.findElement(By.className("android.widget.EditText")).sendKeys("7567543247");
+        mobileDriver.findElement(By.xpath("//android.widget.EditText[@index='1']")).sendKeys("7567543247");
         Thread.sleep(4000);
         log.info("testing 2");
         mobileDriver.hideKeyboard();
         Thread.sleep(2000);
-        mobileDriver.findElement(el.clickOnPrivacyCheckBox).click();
+        mobileDriver.findElement(By.xpath("(//android.widget.TextView[@index='0'])[4]")).click();
         Thread.sleep(2000);
         mobileDriver.findElement(el.btnGetOtp).click();
         Thread.sleep(2000);
